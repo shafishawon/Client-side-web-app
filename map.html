@@ -65,11 +65,10 @@
 				name = userData[i];
 			}
 		}
-		//alert(type+', '+username.radius+', '+username.current_latitude+', '+username.current_longitude);
 		
-		//get position (lognitude and latitude) for selected user from userData array
-		var pos = new google.maps.LatLng(name.current_latitude, name.current_longitude);
-		
+	 //get position (lognitude and latitude) for selected user from userData array
+	 var pos = new google.maps.LatLng(name.current_latitude, name.current_longitude);
+	
 	  //place map into map-canvas div
 	  map = new google.maps.Map(document.getElementById('map-canvas'), {
 		center: pos,
