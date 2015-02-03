@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Place searches</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+    </style>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
+<script>
+	var map;
+	var infowindow;
+	
+	//user details array
+	var userData = [
+		 { 
+			'username': 'Tom',
+			'current_latitude': 23.752805,
+			'current_longitude': 90.375433,
+			'radius': 500
+		 },
+		 { 
+			'username': 'Jane',
+			'current_latitude': 23.755790,
+			'current_longitude': 90.387363,
+			'radius': 400
+		 },
+		 { 
+			'username': 'Dave',
+			'current_latitude': 23.765138,
+			'current_longitude': 90.362601,
+			'radius': 450
+		 },
+		 { 
+			'username': 'Sarah',
+			'current_latitude': 23.792452,
+			'current_longitude': 90.416696,
+			'radius': 600
+		 },
+		 { 
+			'username': 'John',
+			'current_latitude': 23.863064,
+			'current_longitude': 90.400126,
+			'radius': 640
+		 }
+	];
+	
+	function initialize() {
+	   //get place from place select options by type id
+	   var type = document.getElementById("type").value;
+	   
+	   //get username from userName select options by userName id
+	   var user = document.getElementById("userName").value;
+	   
+	   //get name from userData array
+	   var name;
+		
+		for (var i in userData){
+			if(userData[i].username == user){
+				name = userData[i];
+			}
+		}
+		//alert(type+', '+username.radius+', '+username.current_latitude+', '+username.current_longitude);
+		
+		//get position (lognitude and latitude) for selected user from userData array
+		var pos = new google.maps.LatLng(name.current_latitude, name.current_longitude);
+		
+	  //place map into map-canvas div
+	  map = new google.maps.Map(document.getElementById('map-canvas'), {
+		center: pos,
+		zoom: 15
+	  });
+	  
+	  //set location,radius and plae type in request
+	  var request = {
+		location: pos,
+		radius: name.radius,
+		types: [type]
+	  };
+	  
+	  //display content place name text on a pop up
+	  infowindow = new google.maps.InfoWindow();
+	  
+	  //set places using place library
+	  var service = new google.maps.places.PlacesService(map);
+	  
+	  //call nearbySearch method to get near by places 
+	  service.nearbySearch(request, callback);
+	}
+	// handle ressult objects(places)
+	function callback(results, status) {
+	  if (status == google.maps.places.PlacesServiceStatus.OK) {
+		for (var i = 0; i < 5; i++) {
+		  createMarker(results[i]);
+		}
+	  }
+	}
+	// create markers on the map to highlight the places
+	function createMarker(place) {
+	  var placeLoc = place.geometry.location;
+	  var marker = new google.maps.Marker({
+		map: map,
+		position: place.geometry.location
+	  });
+	  
+	// add click event on markesrs
+	  google.maps.event.addListener(marker, 'click', function() {
+		infowindow.setContent(place.name);
+		infowindow.open(map, this);
+	  });
+	}
+	
+	//call initialize method for specific user on place change by type id
+	function dropdownChanged()
+			{
+			   initialize();
+			}
+	//capture everything on window by DOM listener
+	google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+</head>
+  <body>
+  <select id="userName">
+        	<option value="Tom" id="tom">Tom</option>
+            <option value="Jane" id="jane">Jane</option>
+            <option value="Dave" id="dave">Dave</option>
+            <option value="Sarah" id="sarah">Sarah</option>
+            <option value="John" id="john">John</option>
+    </select>
+    
+    <select id="type" onChange="dropdownChanged()">
+        	<option value="school">School</option>
+            <option value="resturant">Resturant</option>
+            <option value="hospital">Hospital</option>
+            <option value="bank">Bank</option>
+     </select>
+    <div id="map-canvas"></div>
+    
+  </body>
+</html>
+
